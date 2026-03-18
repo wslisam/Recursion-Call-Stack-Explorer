@@ -1,4 +1,5 @@
 # Recursion & Call Stack Explorer 🔍
+<img width="1313" height="973" alt="image" src="https://github.com/user-attachments/assets/83045875-57ae-4fde-ae5a-e97add9c90b3" />
 
 This interactive web tool is designed to help students visualize and truly understand one of the trickiest concepts in computer science: **Recursion**. 
 
