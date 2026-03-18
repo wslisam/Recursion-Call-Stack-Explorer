@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recursion & Call Stack Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Added MathJax for rendering LaTeX math formulas -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Custom Animations */
+        @keyframes slideInDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes popOut {
+            from { transform: scale(1); opacity: 1; }
+            to { transform: scale(0.9); opacity: 0; }
+        }
+        .stack-push {
+            animation: slideInDown 0.4s ease-out forwards;
+        }
+        .stack-pop {
+            animation: popOut 0.4s ease-out forwards;
+        }
+        .code-line {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        .active-line {
+            background-color: #fef08a; /* Tailwind yellow-200 */
+            border-left: 4px solid #eab308; /* Tailwind yellow-500 */
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Fixed Tooltip styles */
+        .tooltip-container {
+            position: relative;
+        }
+        .tooltip-container .tooltip-text {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s;
+            top: 120%; /* Position below to prevent clipping */
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased h-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm z-50 shrink-0">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-layer-group text-blue-600 text-2xl"></i>
+                <h1 class="text-xl font-bold text-slate-700" data-i18n="title">Recursion Explorer</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="text-sm text-slate-400 font-medium hidden sm:inline">Created by Sam Li</span>
+                <button id="langToggle" class="px-3 py-1.5 bg-slate-100 text-slate-700 border border-slate-200 rounded-md hover:bg-slate-200 transition text-sm font-bold shadow-sm">
+                    中 / EN
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto p-4">
+        <div class="max-w-7xl mx-auto space-y-6">
+            
+            <!-- Introduction -->
+            <section class="max-w-4xl mx-auto text-center space-y-2">
+                <h2 class="text-2xl font-bold text-slate-800" data-i18n="introTitle">Demystifying Recursion</h2>
+                <p class="text-slate-600 text-md leading-relaxed" data-i18n="introDesc">
+                    Recursion is simply a function calling itself to solve a smaller piece of the same problem. 
+                    Think of it like <strong>Russian Nesting Dolls</strong>: you keep opening smaller dolls until you find the tiny, solid one in the center (the Base Case). Then, you put them all back together!
+                </p>
+            </section>
+
+            <!-- Interactive Explorer -->
+            <section class="bg-white rounded-2xl shadow-lg border border-slate-200 flex flex-col">
+                <div class="bg-slate-800 px-6 py-3 rounded-t-2xl flex flex-wrap gap-4 justify-between items-center text-white shrink-0">
+                    <h3 class="font-semibold text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-gamepad text-blue-400"></i> 
+                        <span data-i18n="simTitle">Interactive Simulation: Factorial \( n! \)</span>
+                    </h3>
+                    <div class="flex items-center gap-3 bg-slate-700 p-1.5 rounded-lg">
+                        <label for="nInput" class="text-sm font-medium ml-2" data-i18n="inputLabel">Calculate for n =</label>
+                        <select id="nInput" class="bg-slate-600 text-white rounded px-2 py-1 border border-slate-500 outline-none font-bold cursor-pointer hover:bg-slate-500 transition">
+                            <option value="3" selected>3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        
+                        <div class="tooltip-container ml-1 mr-1">
+                            <button id="btnReset" class="px-3 py-1 bg-red-500 hover:bg-red-400 text-white rounded text-sm font-bold transition shadow-sm">
+                                <i class="fa-solid fa-rotate-right"></i>
+                            </button>
+                            <span class="tooltip-text absolute bg-gray-900 text-white text-xs rounded py-1 px-2 z-50" data-i18n="tipReset">Restart simulation</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-0 min-h-[500px]">
+                    <!-- Left: Code & Controls -->
+                    <div class="p-5 border-b lg:border-b-0 lg:border-r border-slate-200 bg-slate-50 flex flex-col h-full rounded-bl-2xl">
+                        
+                        <div class="flex gap-2 mb-2 shrink-0">
+                            <button id="tabPython" class="px-4 py-1 rounded-t-lg bg-blue-600 text-white text-sm font-bold transition">Python</button>
+                            <button id="tabCpp" class="px-4 py-1 rounded-t-lg bg-slate-200 text-slate-600 hover:bg-slate-300 text-sm font-bold transition">C++</button>
+                        </div>
+
+                        <pre class="font-mono text-sm bg-white p-3 rounded-b-lg rounded-tr-lg shadow-inner border border-slate-200 overflow-x-auto shrink-0"><code id="codeBlock">
+<!-- Python Code -->
+<div id="code-python">
+<div id="py-line-1" class="code-line px-2 py-0.5 rounded"><span class="text-blue-600 font-bold">def</span> <span class="text-yellow-600">factorial</span>(n):</div>
+<div id="py-line-2" class="code-line px-2 py-0.5 rounded">    <span class="text-blue-600 font-bold">if</span> n == <span class="text-orange-500">1</span>: <span class="text-green-600 italic"># Base Case (Stop condition)</span></div>
+<div id="py-line-3" class="code-line px-2 py-0.5 rounded">        <span class="text-blue-600 font-bold">return</span> <span class="text-orange-500">1</span></div>
+<div id="py-line-4" class="code-line px-2 py-0.5 rounded">    <span class="text-green-600 italic"># Recursive Case (Call itself)</span></div>
+<div id="py-line-5" class="code-line px-2 py-0.5 rounded">    <span class="text-blue-600 font-bold">return</span> n * factorial(n - <span class="text-orange-500">1</span>)</div>
+</div>
+<!-- C++ Code -->
+<div id="code-cpp" class="hidden">
+<div id="cpp-line-1" class="code-line px-2 py-0.5 rounded"><span class="text-blue-600 font-bold">int</span> <span class="text-yellow-600">factorial</span>(<span class="text-blue-600 font-bold">int</span> n) {</div>
+<div id="cpp-line-2" class="code-line px-2 py-0.5 rounded">    <span class="text-blue-600 font-bold">if</span> (n == <span class="text-orange-500">1</span>) { <span class="text-green-600 italic">// Base Case (Stop condition)</span></div>
+<div id="cpp-line-3" class="code-line px-2 py-0.5 rounded">        <span class="text-blue-600 font-bold">return</span> <span class="text-orange-500">1</span>;</div>
+<div id="cpp-line-4" class="code-line px-2 py-0.5 rounded">    }</div>
+<div id="cpp-line-5" class="code-line px-2 py-0.5 rounded">    <span class="text-green-600 italic">// Recursive Case (Call itself)</span></div>
+<div id="cpp-line-6" class="code-line px-2 py-0.5 rounded">    <span class="text-blue-600 font-bold">return</span> n * factorial(n - <span class="text-orange-500">1</span>);</div>
+<div id="cpp-line-7" class="code-line px-2 py-0.5 rounded">}</div>
+</div>
+                        </code></pre>
+                        
+                        <!-- Status Box -->
+                        <div class="mt-4 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl flex-1 flex flex-col justify-center overflow-y-auto min-h-[120px]">
+                            <div class="flex justify-between items-center mb-2 shrink-0">
+                                <h4 class="text-sm font-bold text-blue-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-info"></i> <span data-i18n="statusTitle">What is happening?</span>
+                                </h4>
+                                <span id="stepCounter" class="text-xs font-bold bg-blue-200 text-blue-800 px-2 py-1 rounded-full">Step 1 / 10</span>
+                            </div>
+                            <p id="statusMsg" class="text-blue-900 text-sm md:text-base font-medium leading-relaxed">Click "Next Step" to begin.</p>
+                        </div>
+
+                        <!-- Controls -->
+                        <div class="mt-4 flex flex-col gap-2 shrink-0">
+                            <div class="flex gap-4">
+                                <button id="btnPrev" class="w-full py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-bold transition disabled:opacity-40 disabled:cursor-not-allowed flex justify-center items-center gap-2" disabled>
+                                    <i class="fa-solid fa-backward-step"></i> <span data-i18n="btnPrev">Previous</span>
+                                </button>
+                                <button id="btnNext" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-lg shadow-blue-200 disabled:opacity-40 disabled:cursor-not-allowed flex justify-center items-center gap-2">
+                                    <span data-i18n="btnNext">Next</span> <i class="fa-solid fa-forward-step"></i>
+                                </button>
+                            </div>
+                            <p class="text-center text-xs text-slate-400 font-medium" data-i18n="tipKeyboard"><i class="fa-regular fa-keyboard"></i> Tip: You can use Left/Right arrow keys to navigate.</p>
+                        </div>
+                    </div>
+
+                    <!-- Right: Call Stack -->
+                    <div class="p-5 bg-slate-100 flex flex-col h-full rounded-br-2xl">
+                        <div class="flex justify-between items-end mb-3 bg-white p-3 rounded-lg shadow-sm border border-slate-200 shrink-0">
+                            <div>
+                                <h4 class="text-base font-bold text-slate-700 flex items-center gap-2">
+                                    <i class="fa-solid fa-bars-staggered text-indigo-500"></i> <span data-i18n="stackTitle">The Call Stack</span>
+                                </h4>
+                                <p class="text-xs text-slate-500 mt-1" data-i18n="stackDesc">Like a stack of plates: Newest calls go on top, and must finish first.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Stack Container (Changed to flex-col to avoid browser bugs with flex-col-reverse) -->
+                        <div class="flex-1 border-2 border-dashed border-slate-300 rounded-xl bg-slate-200/50 p-3 flex flex-col gap-2 overflow-y-auto no-scrollbar relative min-h-[250px]" id="stackContainer">
+                            <div class="absolute inset-0 flex flex-col items-center justify-center text-slate-400" id="emptyStackMsg">
+                                <i class="fa-solid fa-box-open text-4xl mb-2"></i>
+                                <span class="text-sm font-medium" data-i18n="emptyStack">Stack is empty</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Educational Content -->
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition">
+                    <div class="w-10 h-10 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mb-3 text-xl shadow-sm">
+                        <i class="fa-solid fa-anchor"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2" data-i18n="theory1Title">1. The Base Case (The Anchor)</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed" data-i18n="theory1Desc">
+                        Imagine asking someone a question, and they ask someone else, who asks someone else... it never ends! 
+                        The <strong>Base Case</strong> is the person who actually knows the answer and stops the chain. In code, it's an <code>if</code> statement that returns a real value instead of calling the function again.
+                    </p>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition">
+                    <div class="w-10 h-10 bg-red-100 text-red-600 rounded-xl flex items-center justify-center mb-3 text-xl shadow-sm">
+                        <i class="fa-solid fa-fire-flame-curved"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2" data-i18n="theory2Title">2. Stack Overflow (The Crash)</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed" data-i18n="theory2Desc">
+                        The computer's memory (Call Stack) is like a physical table. You can only stack so many plates before they fall over. 
+                        If you forget your Base Case, the computer keeps stacking function calls until it runs out of memory and crashes. This is a <strong>Stack Overflow</strong>!
+                    </p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        // --- Translations ---
+        const translations = {
+            en: {
+                title: "Recursion Explorer",
+                introTitle: "Demystifying Recursion",
+                introDesc: "Recursion is simply a function calling itself to solve a smaller piece of the same problem. Think of it like <strong>Russian Nesting Dolls</strong>: you keep opening smaller and smaller dolls until you find the tiny, solid one in the center (the Base Case). Then, you put them all back together!",
+                simTitle: "Interactive Simulation: Factorial \\( n! \\)",
+                inputLabel: "Calculate for n =",
+                tipReset: "Restart simulation",
+                statusTitle: "What is happening?",
+                btnPrev: "Previous",
+                btnNext: "Next",
+                tipKeyboard: "<i class=\"fa-regular fa-keyboard\"></i> Tip: You can use Left/Right arrow keys to navigate.",
+                stackTitle: "The Call Stack",
+                stackDesc: "Like a stack of plates: Newest calls go on top, and must finish first.",
+                emptyStack: "Stack is empty (Program finished)",
+                theory1Title: "1. The Base Case (The Anchor)",
+                theory1Desc: "Imagine asking someone a question, and they ask someone else, who asks someone else... it never ends! The <strong>Base Case</strong> is the person who actually knows the answer and stops the chain. In code, it's an <code>if</code> statement that returns a real value instead of calling the function again.",
+                theory2Title: "2. Stack Overflow (The Crash)",
+                theory2Desc: "The computer's memory (Call Stack) is like a physical table. You can only stack so many plates before they fall over. If you forget your Base Case, the computer keeps stacking function calls until it runs out of memory and crashes. This is a <strong>Stack Overflow</strong>!",
+                
+                msgStart: "Ready to calculate <strong>factorial({n})</strong>. Click 'Next' to push the first function call onto the stack.",
+                msgCall: "We called <strong>factorial({n})</strong>. The computer pauses everything else and puts this call on top of the stack.",
+                msgCheckBase: "Checking the Base Case: Is {n} equal to 1? <strong>{res}</strong>.",
+                msgRecurse: "Since {n} is not 1, we must calculate {n} * factorial({n-1}). But wait! We don't know factorial({n-1}) yet. We must pause and call it.",
+                msgBaseReached: "<strong>Base Case reached!</strong> Since n is 1, we finally know an answer. We return 1 and pop this frame off the stack.",
+                msgReturn: "<strong>factorial({prevN})</strong> finished and returned {prevRes}. Now we can calculate {n} * {prevRes} = <strong>{res}</strong>. Popping frame.",
+                msgDone: "<strong>Calculation complete!</strong> The stack is empty. The final answer for {startN}! is <strong>{res}</strong>."
+            },
+            zh: {
+                title: "遞歸與呼叫堆疊探索",
+                introTitle: "破解遞歸 (Recursion) 的迷思",
+                introDesc: "遞歸其實就是「函數自己呼叫自己」，用來解決範圍更小的同類問題。想像一下<strong>俄羅斯套娃</strong>：你不斷打開越來越小的娃娃，直到看見最裡面那個無法再打開的小娃娃（這就是 Base Case 基本條件）。然後，你再把它們一個個套回去！",
+                simTitle: "互動模擬：階乘 (Factorial \\( n! \\))",
+                inputLabel: "計算 n =",
+                tipReset: "重新開始模擬",
+                statusTitle: "現在發生了什麼事？",
+                btnPrev: "上一步",
+                btnNext: "下一步",
+                tipKeyboard: "<i class=\"fa-regular fa-keyboard\"></i> 提示：您可以使用鍵盤的左/右方向鍵來快速切換步驟。",
+                stackTitle: "呼叫堆疊 (Call Stack)",
+                stackDesc: "就像疊盤子一樣：最新呼叫的函數會放在最上面，且必須最先執行完畢。",
+                emptyStack: "堆疊是空的 (程式尚未開始或已結束)",
+                theory1Title: "1. 基本條件 (Base Case) - 煞車系統",
+                theory1Desc: "想像你問某人一個問題，他又去問另一個人，另一個人又去問別人... 這樣永遠不會結束！<strong>基本條件</strong>就是那個「真正知道答案並停止發問」的人。在程式碼中，它通常是一個 <code>if</code> 判斷式，負責回傳具體數值並停止繼續呼叫自己。",
+                theory2Title: "2. 堆疊溢位 (Stack Overflow) - 系統崩潰",
+                theory2Desc: "電腦用來記錄函數呼叫的記憶體（Call Stack）就像一張實體桌子。你只能疊一定數量的盤子，疊太高就會倒塌。如果你忘記寫 Base Case，電腦就會無限疊加函數，直到記憶體耗盡並崩潰。這就是著名的 <strong>Stack Overflow</strong>！",
+                
+                msgStart: "準備計算 <strong>factorial({n})</strong>。點擊「下一步」將第一個函數推入 (Push) 堆疊中。",
+                msgCall: "我們呼叫了 <strong>factorial({n})</strong>。電腦會暫停其他工作，將這個任務放在堆疊的最上方。",
+                msgCheckBase: "檢查基本條件 (Base Case)：{n} 等於 1 嗎？ <strong>{res}</strong>。",
+                msgRecurse: "因為 {n} 不是 1，我們需要計算 {n} * factorial({n-1})。等等！我們還不知道 factorial({n-1}) 的答案，所以必須暫停目前工作，再次呼叫函數。",
+                msgBaseReached: "<strong>觸及基本條件！</strong> 因為 n 是 1，我們終於得到確切答案了。回傳 1，並將這個任務從堆疊中彈出 (Pop)。",
+                msgReturn: "<strong>factorial({prevN})</strong> 執行完畢並回傳了 {prevRes}。現在我們可以計算 {n} * {prevRes} = <strong>{res}</strong>。將任務彈出堆疊。",
+                msgDone: "<strong>計算完成！</strong> 堆疊已清空。{startN}! 的最終答案是 <strong>{res}</strong>。"
+            }
+        };
+
+        let currentLang = 'en';
+        let currentCodeLang = 'python';
+
+        document.getElementById('langToggle').addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'zh' : 'en';
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.innerHTML = translations[currentLang][key];
+                }
+            });
+            
+            // Re-render math if language toggle affected it
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+            updateUI();
+        });
+
+        document.getElementById('tabPython').addEventListener('click', () => setCodeLang('python'));
+        document.getElementById('tabCpp').addEventListener('click', () => setCodeLang('cpp'));
+
+        function setCodeLang(lang) {
+            currentCodeLang = lang;
+            if (lang === 'python') {
+                document.getElementById('tabPython').className = "px-4 py-1 rounded-t-lg bg-blue-600 text-white text-sm font-bold transition";
+                document.getElementById('tabCpp').className = "px-4 py-1 rounded-t-lg bg-slate-200 text-slate-600 hover:bg-slate-300 text-sm font-bold transition";
+                document.getElementById('code-python').classList.remove('hidden');
+                document.getElementById('code-cpp').classList.add('hidden');
+            } else {
+                document.getElementById('tabCpp').className = "px-4 py-1 rounded-t-lg bg-blue-600 text-white text-sm font-bold transition";
+                document.getElementById('tabPython').className = "px-4 py-1 rounded-t-lg bg-slate-200 text-slate-600 hover:bg-slate-300 text-sm font-bold transition";
+                document.getElementById('code-cpp').classList.remove('hidden');
+                document.getElementById('code-python').classList.add('hidden');
+            }
+            updateUI();
+        }
+
+        let steps = [];
+        let currentStepIndex = 0;
+        let startN = 3;
+
+        const lineMap = {
+            'python': { 1: 'py-line-1', 2: 'py-line-2', 3: 'py-line-3', 5: 'py-line-5' },
+            'cpp':    { 1: 'cpp-line-1', 2: 'cpp-line-2', 3: 'cpp-line-3', 5: 'cpp-line-6' }
+        };
+
+        function generateSteps(n) {
+            let trace = [];
+            let stack = [];
+            
+            trace.push({ abstractLine: null, stack: [], msgKey: 'msgStart', msgParams: {n: n} });
+
+            function simulate(currentN) {
+                stack.push({ n: currentN, state: 'Running' });
+                trace.push({ abstractLine: 1, stack: JSON.parse(JSON.stringify(stack)), msgKey: 'msgCall', msgParams: {n: currentN} });
+                
+                let isBase = currentN === 1;
+                trace.push({ abstractLine: 2, stack: JSON.parse(JSON.stringify(stack)), msgKey: 'msgCheckBase', msgParams: {n: currentN, res: isBase ? (currentLang==='en'?'Yes':'是') : (currentLang==='en'?'No':'否')} });
+
+                if (isBase) {
+                    stack[stack.length - 1].state = `Returning 1`;
+                    trace.push({ abstractLine: 3, stack: JSON.parse(JSON.stringify(stack)), msgKey: 'msgBaseReached', msgParams: {} });
+                    stack.pop();
+                    return 1;
+                } else {
+                    stack[stack.length - 1].state = `Waiting for f(${currentN-1})`;
+                    trace.push({ abstractLine: 5, stack: JSON.parse(JSON.stringify(stack)), msgKey: 'msgRecurse', msgParams: {n: currentN, 'n-1': currentN - 1} });
+                    
+                    let returnedValue = simulate(currentN - 1);
+                    
+                    let res = currentN * returnedValue;
+                    stack.push({ n: currentN, state: `Returning ${currentN} * ${returnedValue} = ${res}` }); // Re-push temporarily to show return state
+                    trace.push({ abstractLine: 5, stack: JSON.parse(JSON.stringify(stack)), msgKey: 'msgReturn', msgParams: {n: currentN, prevN: currentN - 1, prevRes: returnedValue, res: res} });
+                    stack.pop();
+                    
+                    stack.pop();
+                    return res;
+                }
+            }
+
+            let finalRes = simulate(n);
+            trace.push({ abstractLine: null, stack: [], msgKey: 'msgDone', msgParams: {startN: n, res: finalRes} });
+            
+            return trace;
+        }
+
+        function initSimulation() {
+            startN = parseInt(document.getElementById('nInput').value);
+            steps = generateSteps(startN);
+            currentStepIndex = 0;
+            updateUI();
+        }
+
+        function updateUI() {
+            const tempSteps = generateSteps(startN);
+            const step = tempSteps[currentStepIndex];
+            
+            document.getElementById('btnPrev').disabled = currentStepIndex === 0;
+            document.getElementById('btnNext').disabled = currentStepIndex === tempSteps.length - 1;
+            document.getElementById('stepCounter').innerText = currentLang === 'en' ? 
+                `Step ${currentStepIndex + 1} / ${tempSteps.length}` : 
+                `第 ${currentStepIndex + 1} 步 / 共 ${tempSteps.length} 步`;
+
+            document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active-line'));
+            if (step.abstractLine) {
+                const elementId = lineMap[currentCodeLang][step.abstractLine];
+                if (elementId) {
+                    document.getElementById(elementId).classList.add('active-line');
+                }
+            }
+
+            let msgTemplate = translations[currentLang][step.msgKey];
+            for (const [key, value] of Object.entries(step.msgParams)) {
+                msgTemplate = msgTemplate.replace(new RegExp(`{${key}}`, 'g'), value);
+            }
+            document.getElementById('statusMsg').innerHTML = msgTemplate;
+
+            const stackContainer = document.getElementById('stackContainer');
+            const emptyMsg = document.getElementById('emptyStackMsg');
+            
+            Array.from(stackContainer.children).forEach(child => {
+                if (child.id !== 'emptyStackMsg') child.remove();
+            });
+
+            if (step.stack.length === 0) {
+                emptyMsg.style.display = 'flex';
+            } else {
+                emptyMsg.style.display = 'none';
+                
+                // Prepend elements so the newest frame is always at the top visually
+                step.stack.forEach((frame, index) => {
+                    const isTop = index === step.stack.length - 1;
+                    const el = document.createElement('div');
+                    
+                    let animationClass = '';
+                    if (isTop && step.msgKey === 'msgCall') animationClass = 'stack-push';
+                    
+                    let statusBadge = '';
+                    if (frame.state.includes('Returning')) {
+                        statusBadge = `<span class="text-xs px-2 py-1 rounded bg-green-100 text-green-700 font-bold"><i class="fa-solid fa-check mr-1"></i> ${currentLang === 'en' ? 'Resolving' : '回傳中'}</span>`;
+                    } else if (isTop) {
+                        statusBadge = `<span class="text-xs px-2 py-1 rounded bg-indigo-100 text-indigo-700 font-bold"><i class="fa-solid fa-play mr-1"></i> ${currentLang === 'en' ? 'Active' : '執行中'}</span>`;
+                    } else {
+                        statusBadge = `<span class="text-xs px-2 py-1 rounded bg-slate-200 text-slate-600 font-bold"><i class="fa-solid fa-pause mr-1"></i> ${currentLang === 'en' ? 'Paused' : '暫停等待'}</span>`;
+                    }
+
+                    el.className = `p-3 rounded-xl border-2 shadow-sm transition-all ${isTop ? 'bg-white border-indigo-500 scale-100 z-10' : 'bg-slate-100 border-slate-300 opacity-60 scale-95'} ${animationClass}`;
+                    
+                    el.innerHTML = `
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold text-indigo-900 text-md">factorial(${frame.n})</span>
+                            ${statusBadge}
+                        </div>
+                        <div class="text-xs text-slate-700 font-mono bg-slate-50 p-2 rounded border border-slate-200">
+                            <span class="text-slate-500">n =</span> <span class="font-bold text-orange-500">${frame.n}</span> <br>
+                            <span class="text-xs font-bold ${isTop ? 'text-indigo-600' : 'text-slate-500'} mt-1 inline-block">↳ ${frame.state}</span>
+                        </div>
+                    `;
+                    // Insert at the top
+                    stackContainer.insertBefore(el, stackContainer.firstChild);
+                });
+            }
+        }
+
+        document.getElementById('btnNext').addEventListener('click', () => {
+            if (currentStepIndex < steps.length - 1) {
+                currentStepIndex++;
+                updateUI();
+            }
+        });
+
+        document.getElementById('btnPrev').addEventListener('click', () => {
+            if (currentStepIndex > 0) {
+                currentStepIndex--;
+                updateUI();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                document.getElementById('btnNext').click();
+            } else if (e.key === 'ArrowLeft') {
+                document.getElementById('btnPrev').click();
+            }
+        });
+
+        document.getElementById('btnReset').addEventListener('click', initSimulation);
+        document.getElementById('nInput').addEventListener('change', initSimulation);
+
+        initSimulation();
+
+    </script>
+</body>
+</html>
