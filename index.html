@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,15 +31,6 @@
             border-left: 4px solid #3b82f6; 
         }
 
-        /* Tooltip Setup */
-        .tooltip-wrapper { position: relative; display: inline-flex; }
-        .tooltip-content {
-            visibility: hidden; opacity: 0; transition: opacity 0.3s;
-            position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%);
-            white-space: nowrap; z-index: 50;
-        }
-        .tooltip-wrapper:hover .tooltip-content { visibility: visible; opacity: 1; }
-
         /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
@@ -57,14 +48,14 @@
                     <i class="fa-solid fa-code text-lg"></i>
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold text-slate-800 leading-tight" data-i18n="headerTitle">遞迴與調用堆疊</h1>
+                    <h1 class="text-lg font-bold text-slate-800 leading-tight" data-i18n="headerTitle">Recursion & Call Stack</h1>
                     <p class="text-xs text-slate-500 font-medium">HKDSE ICT - Algorithm & Programming</p>
                 </div>
             </div>
             <div class="flex items-center gap-4">
                 <span class="text-sm text-slate-500 font-medium hidden sm:inline">Created by Sam Li</span>
                 <button id="langToggle" class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 text-slate-700 border border-slate-200 rounded-full hover:bg-slate-200 transition text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <i class="fa-solid fa-language"></i> <span id="langText">English</span>
+                    <i class="fa-solid fa-language"></i> <span id="langText">繁體中文</span>
                 </button>
             </div>
         </div>
@@ -77,16 +68,16 @@
         <section class="bg-blue-50/50 border border-blue-100 rounded-2xl p-6 relative overflow-hidden">
             <div class="absolute top-0 right-0 p-8 opacity-5"><i class="fa-solid fa-bullseye text-9xl text-blue-600"></i></div>
             <h2 class="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-list-check"></i> <span data-i18n="objTitle">學習目標 (Learning Objectives)</span>
+                <i class="fa-solid fa-list-check"></i> <span data-i18n="objTitle">Learning Objectives</span>
             </h2>
             <ul class="space-y-2 text-slate-700 text-sm sm:text-base relative z-10">
                 <li class="flex items-start gap-2">
                     <i class="fa-solid fa-check text-blue-500 mt-1"></i>
-                    <span data-i18n="obj1">理解遞迴 (Recursion) 的兩大基本結構：基層情況 (Base Case) 與遞迴步驟 (Recursive Step)。</span>
+                    <span data-i18n="obj1">Understand the two core structures of Recursion: <strong>Base Case</strong> and <strong>Recursive Step</strong>.</span>
                 </li>
                 <li class="flex items-start gap-2">
                     <i class="fa-solid fa-check text-blue-500 mt-1"></i>
-                    <span data-i18n="obj2">透過追蹤調用堆疊 (Call Stack) 的變化，視覺化函數呼叫與返回 (Return) 的運作邏輯。</span>
+                    <span data-i18n="obj2">Visualize the mechanism of function calls and returns by tracing the <strong>Call Stack</strong>.</span>
                 </li>
             </ul>
         </section>
@@ -94,19 +85,19 @@
         <!-- 2. Concept Explanation -->
         <section class="space-y-4">
             <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2 border-l-4 border-blue-500 pl-3">
-                <span data-i18n="conceptTitle">深度解構：什麼是遞迴？</span>
+                <span data-i18n="conceptTitle">Deep Dive: What is Recursion?</span>
             </h2>
             <div class="text-slate-600 leading-relaxed space-y-3 text-sm sm:text-base">
-                <p data-i18n="conceptP1">在編程中，<strong>遞迴 (Recursion)</strong> 是指一個子程序 (Subroutine) 在執行過程中直接或間接地呼叫自己。這是一種將大問題拆解為較小規模、結構相同的子問題 (Sub-problems) 的解題策略。</p>
-                <p data-i18n="conceptP2">要撰寫正確的遞迴函數，必須具備兩個核心元素：</p>
+                <p data-i18n="conceptP1">In programming, <strong>Recursion</strong> occurs when a subroutine calls itself directly or indirectly during execution. It is a problem-solving strategy that breaks down a large problem into smaller <strong>Sub-problems</strong> of the same structure.</p>
+                <p data-i18n="conceptP2">To write a correct recursive function, two core elements are required:</p>
                 <div class="grid sm:grid-cols-2 gap-4 mt-4">
                     <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-blue-700 mb-2"><i class="fa-solid fa-anchor mr-1"></i> <span data-i18n="baseCase">基層情況 (Base Case)</span></h3>
-                        <p class="text-sm" data-i18n="baseCaseDesc">終止遞迴的條件。當滿足此條件時，函數不再呼叫自己，而是返回一個確定的值。若缺失此條件，將導致無限迴圈。</p>
+                        <h3 class="font-bold text-blue-700 mb-2"><i class="fa-solid fa-anchor mr-1"></i> <span data-i18n="baseCase">Base Case</span></h3>
+                        <p class="text-sm" data-i18n="baseCaseDesc">The terminating condition. When met, the function stops calling itself and returns a definite value. Without it, infinite recursion occurs.</p>
                     </div>
                     <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-emerald-700 mb-2"><i class="fa-solid fa-arrow-turn-down mr-1"></i> <span data-i18n="recursiveStep">遞迴步驟 (Recursive Step)</span></h3>
-                        <p class="text-sm" data-i18n="recursiveStepDesc">將問題簡化，並傳入較小的參數再次呼叫自身。每一次的遞迴呼叫，都必須讓狀態向「基層情況」靠近。</p>
+                        <h3 class="font-bold text-emerald-700 mb-2"><i class="fa-solid fa-arrow-turn-down mr-1"></i> <span data-i18n="recursiveStep">Recursive Step</span></h3>
+                        <p class="text-sm" data-i18n="recursiveStepDesc">Simplifies the problem and calls itself with a smaller parameter. Each recursive call must move the state closer to the Base Case.</p>
                     </div>
                 </div>
             </div>
@@ -118,23 +109,20 @@
                 <div>
                     <h3 class="font-bold text-lg flex items-center gap-2">
                         <i class="fa-solid fa-gamepad text-blue-400"></i> 
-                        <span data-i18n="simTitle">互動模擬：階乘 (Factorial)</span>
+                        <span data-i18n="simTitle">Interactive Simulation: Factorial</span>
                     </h3>
-                    <p class="text-slate-300 text-xs mt-1" data-i18n="simSubtitle">計算公式：$$n! = n \times (n-1)!$$，基層情況：$$1! = 1$$</p>
+                    <p class="text-slate-300 text-xs mt-1" data-i18n="simSubtitle">Formula: $$n! = n \times (n-1)!$$, Base Case: $$1! = 1$$</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <label for="nInput" class="text-sm font-medium" data-i18n="inputLabel">輸入 $n$ =</label>
-                    <select id="nInput" class="bg-slate-700 text-white rounded-md px-3 py-1 border border-slate-600 outline-none font-mono text-sm focus:ring-2 focus:ring-blue-500 transition">
+                    <label for="nInput" class="text-sm font-medium whitespace-nowrap" data-i18n="inputLabel">Input n =</label>
+                    <select id="nInput" class="bg-slate-700 text-white rounded-md px-3 py-1.5 border border-slate-600 outline-none font-mono text-sm focus:ring-2 focus:ring-blue-500 transition">
                         <option value="3" selected>3</option>
                         <option value="4">4</option>
                         <option value="5">5</option>
                     </select>
-                    <div class="tooltip-wrapper">
-                        <button id="btnReset" class="px-3 py-1 bg-rose-500 hover:bg-rose-600 text-white rounded-md text-sm font-bold transition shadow-sm">
-                            <i class="fa-solid fa-rotate-right"></i>
-                        </button>
-                        <span class="tooltip-content bg-slate-900 text-white text-xs rounded py-1 px-2" data-i18n="tipReset">重置模擬 (Reset)</span>
-                    </div>
+                    <button id="btnReset" class="flex items-center gap-2 px-3 py-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-md text-sm font-bold transition shadow-sm">
+                        <i class="fa-solid fa-rotate-right"></i> <span data-i18n="btnReset">Restart</span>
+                    </button>
                 </div>
             </div>
             
@@ -168,7 +156,7 @@
                     <!-- Status Box -->
                     <div class="mt-4 p-4 bg-indigo-50 border border-indigo-100 rounded-xl flex-1 flex flex-col justify-center">
                         <div class="flex justify-between items-center mb-3">
-                            <h4 class="text-xs font-bold text-indigo-800 uppercase tracking-wider" data-i18n="statusTitle">執行日誌 (Execution Log)</h4>
+                            <h4 class="text-xs font-bold text-indigo-800 uppercase tracking-wider" data-i18n="statusTitle">Execution Log</h4>
                             <span id="stepCounter" class="text-xs font-bold bg-indigo-200 text-indigo-800 px-2 py-1 rounded-md">Step 1 / 10</span>
                         </div>
                         <p id="statusMsg" class="text-slate-700 text-sm font-medium leading-relaxed"></p>
@@ -177,28 +165,28 @@
                     <!-- Controls -->
                     <div class="mt-4 flex gap-3">
                         <button id="btnPrev" class="flex-1 py-2.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg font-semibold transition disabled:opacity-40 flex justify-center items-center gap-2">
-                            <i class="fa-solid fa-chevron-left"></i> <span data-i18n="btnPrev">上一步</span>
+                            <i class="fa-solid fa-chevron-left"></i> <span data-i18n="btnPrev">Previous</span>
                         </button>
                         <button id="btnNext" class="flex-[2] py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition shadow-md shadow-blue-200 disabled:opacity-40 flex justify-center items-center gap-2">
-                            <span data-i18n="btnNext">下一步</span> <i class="fa-solid fa-chevron-right"></i>
+                            <span data-i18n="btnNext">Next</span> <i class="fa-solid fa-chevron-right"></i>
                         </button>
                     </div>
-                    <p class="text-center text-xs text-slate-400 font-medium mt-3" data-i18n="tipKeyboard">💡 提示：可使用鍵盤左右方向鍵控制</p>
+                    <p class="text-center text-xs text-slate-400 font-medium mt-3" data-i18n="tipKeyboard">💡 Tip: Use Left/Right arrow keys to control.</p>
                 </div>
 
                 <!-- Right: Call Stack -->
                 <div class="lg:col-span-7 p-5 bg-slate-100 flex flex-col">
                     <div class="mb-3">
                         <h4 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-layer-group text-blue-500"></i> <span data-i18n="stackTitle">調用堆疊 (Call Stack)</span>
+                            <i class="fa-solid fa-layer-group text-blue-500"></i> <span data-i18n="stackTitle">Call Stack</span>
                         </h4>
-                        <p class="text-xs text-slate-500 mt-1" data-i18n="stackDesc">遵循後進先出 (LIFO) 原則。記憶體會為每次呼叫分配獨立空間（Stack Frame）。</p>
+                        <p class="text-xs text-slate-500 mt-1" data-i18n="stackDesc">Follows LIFO (Last-In-First-Out). Memory allocates an independent space (Stack Frame) for each call.</p>
                     </div>
                     
                     <div class="flex-1 border-2 border-dashed border-slate-300 rounded-xl bg-slate-200/50 p-4 flex flex-col justify-end gap-3 overflow-y-auto relative h-[400px]" id="stackContainer">
                         <div class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 transition-opacity" id="emptyStackMsg">
                             <i class="fa-solid fa-box-open text-4xl mb-2"></i>
-                            <span class="text-sm font-medium" data-i18n="emptyStack">堆疊為空 (Stack is empty)</span>
+                            <span class="text-sm font-medium" data-i18n="emptyStack">Stack is empty</span>
                         </div>
                         <!-- Stack frames injected here by JS -->
                     </div>
@@ -211,23 +199,23 @@
             <!-- Misconceptions -->
             <section class="bg-rose-50 border border-rose-100 rounded-2xl p-6">
                 <h2 class="text-lg font-bold text-rose-800 mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="mythTitle">常見迷思 (Common Myths)</span>
+                    <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="mythTitle">Common Myths</span>
                 </h2>
                 <div class="space-y-3 text-sm text-slate-700">
-                    <p><strong><i class="fa-solid fa-xmark text-rose-500"></i> <span data-i18n="myth1Q">迷思：遞迴總是比使用 for/while 迴圈 (Iteration) 更好？</span></strong></p>
-                    <p data-i18n="myth1A"><strong>事實：</strong> 並非如此。雖然遞迴在處理樹狀資料（Tree）或圖形（Graph）時程式碼更簡潔易讀，但因為每次呼叫都需要在記憶體中建立 Stack Frame，其 <strong>空間複雜度 (Space Complexity)</strong> 較高。如果遞迴過深，會導致記憶體耗盡，發生 <strong>堆疊溢出 (Stack Overflow)</strong> 錯誤。許多簡單問題使用迭代 (Iteration) 在效能上更佳。</p>
+                    <p><strong><i class="fa-solid fa-xmark text-rose-500"></i> <span data-i18n="myth1Q">Myth: Recursion is always better than Iteration (like for/while loops)?</span></strong></p>
+                    <p data-i18n="myth1A"><strong>Fact:</strong> Not necessarily. While recursion makes code cleaner for trees or graphs, its <strong>Space Complexity</strong> is higher because each call creates a new Stack Frame. Deep recursion exhausts memory, causing a <strong>Stack Overflow</strong> runtime error. Iteration is often more memory-efficient.</p>
                 </div>
             </section>
 
             <!-- Key Takeaways -->
             <section class="bg-emerald-50 border border-emerald-100 rounded-2xl p-6">
                 <h2 class="text-lg font-bold text-emerald-800 mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-lightbulb"></i> <span data-i18n="takeawayTitle">概念總結 (Key Takeaways)</span>
+                    <i class="fa-solid fa-lightbulb"></i> <span data-i18n="takeawayTitle">Key Takeaways</span>
                 </h2>
                 <ul class="space-y-2 text-sm text-slate-700 list-disc list-inside pl-4">
-                    <li data-i18n="take1">遞迴本質上是利用電腦的 <strong>調用堆疊 (Call Stack)</strong> 來暫存狀態。</li>
-                    <li data-i18n="take2">必須包含 <strong>基層情況 (Base Case)</strong> 作為「煞車系統」，否則程式會崩潰。</li>
-                    <li data-i18n="take3">遞迴過程分為兩階段：「遞進 (Winding)」時不斷呼叫並將參數推入堆疊；觸及基層情況後開始「回歸 (Unwinding)」，將計算結果依序返回並彈出堆疊。</li>
+                    <li data-i18n="take1">Recursion inherently relies on the computer's <strong>Call Stack</strong> to pause and save states.</li>
+                    <li data-i18n="take2">A <strong>Base Case</strong> is mandatory as the 'brake system'; otherwise, the program crashes.</li>
+                    <li data-i18n="take3">The process has two phases: 'Winding' (pushing calls onto the stack) and 'Unwinding' (popping calls and returning values after reaching the base case).</li>
                 </ul>
             </section>
         </div>
@@ -235,13 +223,13 @@
         <!-- 5. Think & Link -->
         <section class="bg-slate-800 text-white rounded-2xl p-6 shadow-lg">
             <h2 class="text-lg font-bold text-amber-400 mb-3 flex items-center gap-2">
-                <i class="fa-solid fa-brain"></i> <span data-i18n="thinkTitle">思考與連結 (Think & Link)</span>
+                <i class="fa-solid fa-brain"></i> <span data-i18n="thinkTitle">Think & Link</span>
             </h2>
             <div class="space-y-4">
                 <div>
-                    <p class="font-medium text-sm sm:text-base text-slate-200" data-i18n="thinkQ1">Q: 如果我們在計算 <code>factorial(3)</code> 時，忘記寫 `if (n == 1)` 這個基層情況，電腦底層會發生什麼事？</p>
+                    <p class="font-medium text-sm sm:text-base text-slate-200" data-i18n="thinkQ1">Q: What happens under the hood if we forget the `if (n == 1)` base case when calculating `factorial(3)`?</p>
                     <div class="mt-2 p-3 bg-slate-700/50 rounded-lg border border-slate-600 text-sm text-slate-300">
-                        <span class="text-emerald-400 font-bold">A: </span><span data-i18n="thinkA1">函數會無止盡地呼叫 `factorial(0)`, `factorial(-1)`, `factorial(-2)`...。每次呼叫都會佔用一塊調用堆疊 (Call Stack) 的記憶體空間。由於記憶體是有限的，最終電腦會耗盡配置給堆疊的記憶體空間，並拋出 <strong>堆疊溢出 (Stack Overflow)</strong> 的執行期錯誤 (Runtime Error)，導致程式強行終止。</span>
+                        <span class="text-emerald-400 font-bold">A: </span><span data-i18n="thinkA1">The function endlessly calls `factorial(0)`, `factorial(-1)`... Each call consumes a block of Call Stack memory. Since memory is finite, the computer eventually exhausts it and throws a <strong>Stack Overflow</strong> runtime error, crashing the program.</span>
                     </div>
                 </div>
             </div>
@@ -250,32 +238,32 @@
         <!-- 6. Self Assessment (Quiz) -->
         <section class="bg-white border border-slate-200 rounded-2xl p-6 mb-10">
             <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-spell-check text-blue-600"></i> <span data-i18n="quizTitle">自我檢測 (Self-Assessment)</span>
+                <i class="fa-solid fa-spell-check text-blue-600"></i> <span data-i18n="quizTitle">Self-Assessment</span>
             </h2>
             
             <div class="space-y-6">
                 <!-- Question 1 -->
                 <div class="quiz-q" data-correct="1">
-                    <p class="font-medium text-sm text-slate-800 mb-2" data-i18n="q1Title">1. 遞迴函數必須具備哪項元素以防止無限執行？ (What element is essential to prevent infinite execution?)</p>
+                    <p class="font-medium text-sm text-slate-800 mb-2" data-i18n="q1Title">1. What element is essential to prevent a recursive function from infinite execution?</p>
                     <div class="grid sm:grid-cols-2 gap-2 text-sm">
-                        <button class="quiz-btn border rounded-lg p-3 text-left hover:bg-blue-50 transition" onclick="checkQuiz(this, false)"><span data-i18n="q1o1">全域變數 (Global Variable)</span></button>
-                        <button class="quiz-btn border rounded-lg p-3 text-left hover:bg-blue-50 transition" onclick="checkQuiz(this, true)"><span data-i18n="q1o2">基層情況 (Base Case)</span></button>
-                        <button class="quiz-btn border rounded-lg p-3 text-left hover:bg-blue-50 transition" onclick="checkQuiz(this, false)"><span data-i18n="q1o3">陣列 (Array)</span></button>
-                        <button class="quiz-btn border rounded-lg p-3 text-left hover:bg-blue-50 transition" onclick="checkQuiz(this, false)"><span data-i18n="q1o4">遞迴步驟 (Recursive Step)</span></button>
+                        <button class="quiz-btn border rounded-lg p-3 text-left hover:bg-blue-50 transition bg-white text-slate-800" onclick="checkQuiz(this, false, 'quiz1Exp')"><span data-i18n="q1o1">Global Variable</span></button>
+                        <button class="quiz-btn border rounded-lg p-3 text-left hover:bg-blue-50 transition bg-white text-slate-800" onclick="checkQuiz(this, true, 'quiz1Exp')"><span data-i18n="q1o2">Base Case</span></button>
+                        <button class="quiz-btn border rounded-lg p-3 text-left hover:bg-blue-50 transition bg-white text-slate-800" onclick="checkQuiz(this, false, 'quiz1Exp')"><span data-i18n="q1o3">Array</span></button>
+                        <button class="quiz-btn border rounded-lg p-3 text-left hover:bg-blue-50 transition bg-white text-slate-800" onclick="checkQuiz(this, false, 'quiz1Exp')"><span data-i18n="q1o4">Recursive Step</span></button>
                     </div>
-                    <p class="quiz-feedback hidden mt-2 text-xs font-bold"></p>
+                    <div class="quiz-feedback hidden"></div>
                 </div>
 
                 <!-- Question 2 -->
                 <div class="quiz-q border-t border-slate-100 pt-6" data-correct="3">
-                    <p class="font-medium text-sm text-slate-800 mb-2" data-i18n="q2Title">2. 遞迴過程中，電腦底層使用哪種資料結構來記錄子程式 (Subroutine) 的返回位址與變數？</p>
+                    <p class="font-medium text-sm text-slate-800 mb-2" data-i18n="q2Title">2. Which data structure does the computer underlyingly use to record return addresses and variables of Subroutines?</p>
                     <div class="grid sm:grid-cols-2 gap-2 text-sm">
-                        <button class="quiz-btn border rounded-lg p-3 text-left hover:bg-blue-50 transition" onclick="checkQuiz(this, false)"><span data-i18n="q2o1">佇列 (Queue - FIFO)</span></button>
-                        <button class="quiz-btn border rounded-lg p-3 text-left hover:bg-blue-50 transition" onclick="checkQuiz(this, false)"><span data-i18n="q2o2">樹狀結構 (Tree)</span></button>
-                        <button class="quiz-btn border rounded-lg p-3 text-left hover:bg-blue-50 transition" onclick="checkQuiz(this, false)"><span data-i18n="q2o3">關聯式資料庫 (Relational DB)</span></button>
-                        <button class="quiz-btn border rounded-lg p-3 text-left hover:bg-blue-50 transition" onclick="checkQuiz(this, true)"><span data-i18n="q2o4">堆疊 (Stack - LIFO)</span></button>
+                        <button class="quiz-btn border rounded-lg p-3 text-left hover:bg-blue-50 transition bg-white text-slate-800" onclick="checkQuiz(this, false, 'quiz2Exp')"><span data-i18n="q2o1">Queue (FIFO)</span></button>
+                        <button class="quiz-btn border rounded-lg p-3 text-left hover:bg-blue-50 transition bg-white text-slate-800" onclick="checkQuiz(this, false, 'quiz2Exp')"><span data-i18n="q2o2">Tree</span></button>
+                        <button class="quiz-btn border rounded-lg p-3 text-left hover:bg-blue-50 transition bg-white text-slate-800" onclick="checkQuiz(this, false, 'quiz2Exp')"><span data-i18n="q2o3">Relational Database</span></button>
+                        <button class="quiz-btn border rounded-lg p-3 text-left hover:bg-blue-50 transition bg-white text-slate-800" onclick="checkQuiz(this, true, 'quiz2Exp')"><span data-i18n="q2o4">Stack (LIFO)</span></button>
                     </div>
-                    <p class="quiz-feedback hidden mt-2 text-xs font-bold"></p>
+                    <div class="quiz-feedback hidden"></div>
                 </div>
             </div>
         </section>
@@ -299,8 +287,8 @@
                 recursiveStepDesc: "Simplifies the problem and calls itself with a smaller parameter. Each recursive call must move the state closer to the Base Case.",
                 simTitle: "Interactive Simulation: Factorial",
                 simSubtitle: "Formula: $$n! = n \\times (n-1)!$$, Base Case: $$1! = 1$$",
-                inputLabel: "Input $n$ =",
-                tipReset: "Reset Simulation",
+                inputLabel: "Input n =",
+                btnReset: "Restart",
                 statusTitle: "Execution Log",
                 btnPrev: "Previous",
                 btnNext: "Next",
@@ -321,8 +309,10 @@
                 quizTitle: "Self-Assessment",
                 q1Title: "1. What element is essential to prevent a recursive function from infinite execution?",
                 q1o1: "Global Variable", q1o2: "Base Case", q1o3: "Array", q1o4: "Recursive Step",
+                quiz1Exp: "Without a <strong>Base Case</strong>, the recursion will never stop, leading to a Stack Overflow. Global variables or arrays do not prevent infinite loops.",
                 q2Title: "2. Which data structure does the computer underlyingly use to record return addresses and variables of Subroutines?",
                 q2o1: "Queue (FIFO)", q2o2: "Tree", q2o3: "Relational Database", q2o4: "Stack (LIFO)",
+                quiz2Exp: "The <strong>Call Stack</strong> operates on a Last-In-First-Out (LIFO) principle to keep track of function calls, their parameters, and local variables.",
                 
                 // Simulation Log Messages
                 logStart: "Ready to calculate <code>factorial({n})</code>. Click Next.",
@@ -334,7 +324,7 @@
                 logDone: "<strong>Calculation complete!</strong> {startN}! = <strong>{res}</strong>."
             },
             zh: {
-                headerTitle: "遞迴與調用堆疊",
+                headerTitle: "遞迴與調用堆疊 (Recursion & Call Stack)",
                 objTitle: "學習目標 (Learning Objectives)",
                 obj1: "理解遞迴 (Recursion) 的兩大基本結構：<strong>基層情況 (Base Case)</strong> 與 <strong>遞迴步驟 (Recursive Step)</strong>。",
                 obj2: "透過追蹤 <strong>調用堆疊 (Call Stack)</strong> 的變化，視覺化函數呼叫與返回 (Return) 的運作邏輯。",
@@ -347,8 +337,8 @@
                 recursiveStepDesc: "將問題簡化，並傳入較小的參數再次呼叫自身。每一次的遞迴呼叫，都必須讓狀態向「基層情況」靠近。",
                 simTitle: "互動模擬：階乘 (Factorial)",
                 simSubtitle: "計算公式：$$n! = n \\times (n-1)!$$，基層情況：$$1! = 1$$",
-                inputLabel: "輸入 $n$ =",
-                tipReset: "重置模擬 (Reset)",
+                inputLabel: "輸入 n =",
+                btnReset: "重新開始",
                 statusTitle: "執行日誌 (Execution Log)",
                 btnPrev: "上一步",
                 btnNext: "下一步",
@@ -358,19 +348,21 @@
                 emptyStack: "堆疊為空 (Stack is empty)",
                 mythTitle: "常見迷思 (Common Myths)",
                 myth1Q: "迷思：遞迴總是比使用 for/while 迴圈 (Iteration) 更好？",
-                myth1A: "<strong>事實：</strong> 並非如此。雖然遞迴在處理樹狀資料（Tree）或圖形（Graph）時程式碼更簡潔易讀，但因為每次呼叫都需要在記憶體中建立 Stack Frame，其 <strong>空間複雜度 (Space Complexity)</strong> 較高。如果遞迴過深，會導致記憶體耗盡，發生 <strong>堆疊溢出 (Stack Overflow)</strong> 執行期錯誤。許多簡單問題使用迭代 (Iteration) 在效能上更佳。",
+                myth1A: "<strong>事實：</strong> 並非如此。雖然遞迴在處理樹狀資料（Tree）或圖形（Graph）時程式碼更簡潔易讀，但因為每次呼叫都需要在記憶體中建立 Stack Frame，其 <strong>空間複雜度 (Space Complexity)</strong> 較高。如果遞迴過深，會導致記憶體耗盡，發生 <strong>堆疊溢位 (Stack Overflow)</strong> 執行期錯誤。許多簡單問題使用迭代 (Iteration) 在效能上更佳。",
                 takeawayTitle: "概念總結 (Key Takeaways)",
                 take1: "遞迴本質上是利用電腦的 <strong>調用堆疊 (Call Stack)</strong> 來暫存狀態。",
                 take2: "必須包含 <strong>基層情況 (Base Case)</strong> 作為「煞車系統」，否則程式會崩潰。",
                 take3: "遞迴過程分為兩階段：「遞進 (Winding)」時不斷呼叫並將參數推入堆疊；觸及基層情況後開始「回歸 (Unwinding)」，將計算結果依序返回並彈出堆疊。",
                 thinkTitle: "思考與連結 (Think & Link)",
                 thinkQ1: "Q: 如果我們在計算 <code>factorial(3)</code> 時，忘記寫 `if (n == 1)` 這個基層情況，電腦底層會發生什麼事？",
-                thinkA1: "函數會無止盡地呼叫 `factorial(0)`, `factorial(-1)`...。每次呼叫都會佔用一塊調用堆疊 (Call Stack) 的記憶體空間。由於記憶體是有限的，最終電腦會耗盡配置給堆疊的記憶體空間，並拋出 <strong>堆疊溢出 (Stack Overflow)</strong> 的執行期錯誤 (Runtime Error)，導致程式強行終止。",
+                thinkA1: "函數會無止盡地呼叫 `factorial(0)`, `factorial(-1)`...。每次呼叫都會佔用一塊調用堆疊 (Call Stack) 的記憶體空間。由於記憶體是有限的，最終電腦會耗盡配置給堆疊的記憶體空間，並拋出 <strong>堆疊溢位 (Stack Overflow)</strong> 的執行期錯誤 (Runtime Error)，導致程式強行終止。",
                 quizTitle: "自我檢測 (Self-Assessment)",
                 q1Title: "1. 遞迴函數必須具備哪項元素以防止無限執行？ (What element is essential to prevent infinite execution?)",
                 q1o1: "全域變數 (Global Variable)", q1o2: "基層情況 (Base Case)", q1o3: "陣列 (Array)", q1o4: "遞迴步驟 (Recursive Step)",
+                quiz1Exp: "若沒有 <strong>基層情況 (Base Case)</strong>，遞迴將永遠不會停止，最終導致堆疊溢位 (Stack Overflow)。全域變數或陣列無法阻止無限迴圈的發生。",
                 q2Title: "2. 遞迴過程中，電腦底層使用哪種資料結構來記錄子程式 (Subroutine) 的返回位址與變數？",
                 q2o1: "佇列 (Queue - FIFO)", q2o2: "樹狀結構 (Tree)", q2o3: "關聯式資料庫 (Relational DB)", q2o4: "堆疊 (Stack - LIFO)",
+                quiz2Exp: "<strong>調用堆疊 (Call Stack)</strong> 採用後進先出 (LIFO) 原則，用於精確追蹤每一次函數呼叫及其區域變數的狀態。",
                 
                 // Simulation Log Messages
                 logStart: "準備計算 <code>factorial({n})</code>。點擊「下一步」。",
@@ -384,7 +376,8 @@
         };
 
         // --- State Management ---
-        let currentLang = sessionStorage.getItem('appLang') || 'zh';
+        // Default to English as requested
+        let currentLang = sessionStorage.getItem('appLang') || 'en';
         let codeLang = 'python';
         
         // Simulation State
@@ -415,7 +408,14 @@
                 MathJax.typesetPromise();
             }
             
-            updateUI(); // refresh simulation UI text
+            // Re-render UI strings (logs and stack dynamic translations)
+            updateUI(); 
+            
+            // Reset Quizzes to ensure explanations match language
+            document.querySelectorAll('.quiz-q').forEach(q => {
+                const btn = q.querySelector('.quiz-btn[disabled]');
+                if(btn) resetQuiz(btn); // Clear state so new language takes effect correctly
+            });
         }
 
         document.getElementById('langToggle').addEventListener('click', () => {
@@ -452,10 +452,17 @@
             let trace = [];
             let stack = [];
             
+            const t = {
+                eval: currentLang === 'en' ? 'evaluating' : '評估中',
+                ret1: currentLang === 'en' ? 'returning 1' : '返回 1',
+                wait: (func) => currentLang === 'en' ? `waiting ${func}` : `等待 ${func}`,
+                calc: (expr) => currentLang === 'en' ? `calc: ${expr}` : `計算: ${expr}`
+            };
+            
             trace.push({ line: null, stack: [], logKey: 'logStart', logParams: {n: n} });
 
             function recurse(curr) {
-                stack.push({ n: curr, status: 'evaluating' });
+                stack.push({ n: curr, status: t.eval });
                 trace.push({ line: 1, stack: JSON.parse(JSON.stringify(stack)), logKey: 'logCall', logParams: {n: curr} });
                 
                 let isBase = curr === 1;
@@ -463,19 +470,19 @@
                 trace.push({ line: 2, stack: JSON.parse(JSON.stringify(stack)), logKey: 'logCheck', logParams: {n: curr, res: resStr} });
 
                 if (isBase) {
-                    stack[stack.length - 1].status = 'returning 1';
+                    stack[stack.length - 1].status = t.ret1;
                     trace.push({ line: 3, stack: JSON.parse(JSON.stringify(stack)), logKey: 'logBase', logParams: {} });
                     stack.pop();
                     return 1;
                 } else {
-                    stack[stack.length - 1].status = `waiting fact(${curr-1})`;
+                    stack[stack.length - 1].status = t.wait(`factorial(${curr-1})`);
                     trace.push({ line: 5, stack: JSON.parse(JSON.stringify(stack)), logKey: 'logRecurse', logParams: {n: curr, nextN: curr - 1} });
                     
                     let returnedVal = recurse(curr - 1);
                     let calcRes = curr * returnedVal;
                     
                     // Temp push to show return state visually before popping
-                    stack.push({ n: curr, status: `calc: ${curr} * ${returnedVal}` });
+                    stack.push({ n: curr, status: t.calc(`${curr} * ${returnedVal}`) });
                     trace.push({ line: 5, stack: JSON.parse(JSON.stringify(stack)), logKey: 'logReturn', logParams: {n: curr, prevN: curr - 1, prevRes: returnedVal, res: calcRes} });
                     stack.pop(); // remove temp return state
                     stack.pop(); // remove actual waiting frame
@@ -497,7 +504,7 @@
         }
 
         function updateUI() {
-            // regenerate steps on the fly in case language changed (for localized Yes/No strings inside trace)
+            // Regenerate steps to ensure dynamic translations (like "evaluating") reflect currentLang
             steps = generateSteps(startN);
             const step = steps[currentStepIdx];
             
@@ -524,7 +531,7 @@
             const container = document.getElementById('stackContainer');
             const emptyMsg = document.getElementById('emptyStackMsg');
             
-            // clear old frames
+            // Clear old frames
             Array.from(container.children).forEach(c => {
                 if(c.id !== 'emptyStackMsg') c.remove();
             });
@@ -542,7 +549,7 @@
                     let anim = (isTop && step.logKey === 'logCall') ? 'stack-push' : '';
                     let badge = '';
                     
-                    if (frame.status.includes('calc') || frame.status.includes('return')) {
+                    if (frame.status.includes('calc') || frame.status.includes('return') || frame.status.includes('計算') || frame.status.includes('返回')) {
                         badge = `<span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded shadow-sm"><i class="fa-solid fa-bolt"></i> Executing</span>`;
                     } else if (isTop) {
                         badge = `<span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded shadow-sm"><i class="fa-solid fa-play"></i> Active</span>`;
@@ -561,7 +568,7 @@
                             <span class="${isTop ? 'text-blue-600 font-semibold' : 'text-slate-400'} mt-0.5 inline-block">↳ ${frame.status}</span>
                         </div>
                     `;
-                    // Prepend to show stack growing upwards visually (even with flex-col-reverse/end)
+                    // Prepend to show stack growing upwards visually
                     container.insertBefore(el, container.firstChild);
                 });
             }
@@ -583,11 +590,12 @@
         });
 
         // Quiz Logic
-        function checkQuiz(btn, isCorrect) {
+        function checkQuiz(btn, isCorrect, explanationKey) {
             const container = btn.closest('.quiz-q');
             const feedback = container.querySelector('.quiz-feedback');
             const allBtns = container.querySelectorAll('.quiz-btn');
             
+            // Disable all buttons in this question
             allBtns.forEach(b => {
                 b.disabled = true;
                 b.classList.remove('hover:bg-blue-50');
@@ -602,14 +610,38 @@
                 }
             });
 
-            feedback.classList.remove('hidden', 'text-emerald-600', 'text-rose-600');
+            // Show explanation and feedback
+            feedback.classList.remove('hidden');
+            const explanationText = i18n[currentLang][explanationKey];
+
             if(isCorrect) {
-                feedback.classList.add('text-emerald-600');
-                feedback.innerHTML = '<i class="fa-solid fa-circle-check"></i> ' + (currentLang === 'en' ? 'Correct!' : '答對了！');
+                feedback.className = 'quiz-feedback mt-4 p-4 rounded-xl text-sm font-medium border bg-emerald-50 border-emerald-200 text-emerald-800 shadow-sm';
+                feedback.innerHTML = `
+                    <p class="text-base"><i class="fa-solid fa-circle-check"></i> <strong>${currentLang === 'en' ? 'Correct!' : '答對了！'}</strong></p>
+                    <p class="mt-2 text-emerald-700 leading-relaxed">${explanationText}</p>
+                `;
             } else {
-                feedback.classList.add('text-rose-600');
-                feedback.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> ' + (currentLang === 'en' ? 'Incorrect. Try refreshing the page to try again.' : '答錯了。請重新整理頁面再試一次。');
+                feedback.className = 'quiz-feedback mt-4 p-4 rounded-xl text-sm font-medium border bg-rose-50 border-rose-200 text-rose-800 shadow-sm';
+                feedback.innerHTML = `
+                    <p class="text-base"><i class="fa-solid fa-circle-xmark"></i> <strong>${currentLang === 'en' ? 'Incorrect.' : '答錯了。'}</strong></p>
+                    <p class="mt-2 text-rose-700 leading-relaxed">${explanationText}</p>
+                    <button onclick="resetQuiz(this)" class="mt-3 px-4 py-1.5 bg-white border border-rose-300 rounded-md text-rose-600 hover:bg-rose-100 hover:border-rose-400 transition font-bold shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i> ${currentLang === 'en' ? 'Try Again' : '再試一次'}
+                    </button>
+                `;
             }
+        }
+
+        function resetQuiz(element) {
+            const container = element.closest('.quiz-q');
+            const feedback = container.querySelector('.quiz-feedback');
+            const allBtns = container.querySelectorAll('.quiz-btn');
+
+            feedback.classList.add('hidden');
+            allBtns.forEach(b => {
+                b.disabled = false;
+                b.className = 'quiz-btn border rounded-lg p-3 text-left hover:bg-blue-50 transition bg-white text-slate-800';
+            });
         }
 
         // Init
